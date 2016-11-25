@@ -34,4 +34,25 @@ export class Api {
     getHomepage(): Promise<WPPostObject> {
         return this.single('page', 2);
     }
+
+    create(postType: PostType, body) {
+        return this.http.fetch(`${postType}`, {
+            method: 'post',
+            body: json(body)
+        });
+    }
+
+    update(postType: PostType, ID: number, body) {
+        return this.http.fetch(`${postType}/${ID}`, {
+            method: 'post',
+            body: json(body)
+        });
+    }
+
+    delete(postType: PostType, ID: number) {
+        return this.http.fetch(`${postType}/${ID}`, {
+            method: 'delete'
+        });
+    }
+
 }
