@@ -1,17 +1,15 @@
 import {inject} from 'aurelia-framework';
-import {WpApi} from './services/wp-api';
+import {Api} from './services/api';
 
-@inject(WpApi)
+@inject(Api)
 export class Homepage {
-	page = {};
+	content = {};
 
-	constructor(private api: WpApi) {
+	constructor(private api: Api) {
 	
 	}
 
     activate() {
-        return this.api.getHomepage().then(response => response.json()).then(response => {
-            this.page = response;
-        });
+        return this.api.getHomepage().then(response => this.content = response);
     }
 }

@@ -1,22 +1,20 @@
 import {inject} from 'aurelia-framework';
-import {WpApi} from './services/wp-api';
+import {Api} from './services/api';
 
-@inject(WpApi)
-export class Page {
-	private api: WpApi;
-	
-    page = {};
+@inject(Api)
+export class Page {	
+    content = {};
 
-	constructor(api) {
-		this.api = api;
+	constructor(private api: Api) {
+
 	}
 
 	activate(params, routeConfig) {
-		this.api.getPage(params.id)
-            .then(response => response.json())
-			.then(data => {
-				this.page = data.page;
-				routeConfig.navModel.setTitle(data.page.title);
+		this.api.single('page', params.id)
+			.then(page => {
+				this.content = page;
+
+				routeConfig.navModel.setTitle(page.title.rendered);
 			});
 	}
 }

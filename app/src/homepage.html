@@ -1,4 +1,5 @@
 <template>
-    <h1>${page.title.rendered & oneTime}</h1>
-    <div innerhtml.one-time="page.content.rendered"></div>
+    <require from="./partials/content.html"></require>
+
+    <content content.bind="content"></content>
 </template>

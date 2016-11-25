@@ -2,7 +2,7 @@ export class NiceDateValueConverter {
     toView(value) {
         let date = new Date(value);
 
-        if (isNaN(date.getMonth)) {
+        if (isNaN(date.getMonth())) {
             return value;
         }
 
@@ -19,21 +19,21 @@ export class NiceDateValueConverter {
         const getOrdinal = (d) => {
             const ordinal = ['st', 'nd', 'rd', 'th'];
 
-            if (d > 3 && d < 21) {
-                return oridinal[3];
+            if (d === 1 || d === 21 || d === 31) {
+                return ordinal[0];
             }
 
-            let modulus = d % 10;
-
-            if (modulus === 1) {
-                return oridinal[0];
-            } else if (modulus === 2) {
-                return modulus[1];
-            } else if (modulus === 3) {
-                return modulus[2];
+            if (d === 2 || d === 22) {
+                return ordinal[1];
             }
+
+            if (d === 3 || d === 23) {
+                return ordinal[2];
+            }
+
+            return ordinal[3];
         };
 
-        return `${d}${getOrdinal(d)} ${monthNames[m} ${y}`;
+        return `${d}${getOrdinal(d)} ${getMonthName(m)} ${y}`;
     }
 }

@@ -1,0 +1,13 @@
+<template bindable="content,showLink" id="${content.id}">
+    
+    <require from="../resources/value-converters/nice-date"></require>
+
+    <header class="entry-header" with.bind="content">
+        <div class="entry-meta">${date | niceDate}</div>
+        <h1 class="entry-title">
+            <template if.bind="!showLink">${title.rendered}</template>
+            <template if.bind="showLink"><a href="${link}">${title.rendered}</a></template>
+        </h1>
+    </header>
+    <div class="entry-content" with.bind="content" innerhtml.bind="content.rendered"></div>
+</template>

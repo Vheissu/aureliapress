@@ -8,7 +8,7 @@ define('app',["require", "exports"], function (require, exports) {
             config.title = 'Aurelia';
             config.options.pushState = true;
             config.map([
-                { route: [''], name: 'homepage', moduleId: './homepage', title: 'Homepage' },
+                { route: ['', '/wp'], name: 'homepage', moduleId: './homepage', title: 'Homepage' },
                 { route: ['page/:id'], name: 'page', moduleId: './page', title: 'Page' },
                 { route: ['pages'], name: 'pages', moduleId: './pages', title: 'Pages' },
                 { route: ['post/:id'], name: 'post', moduleId: './post', title: 'Post' },
@@ -39,44 +39,40 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('services/wp-api',["require", "exports", 'aurelia-framework', 'aurelia-fetch-client'], function (require, exports, aurelia_framework_1, aurelia_fetch_client_1) {
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+define('services/api',["require", "exports", 'aurelia-framework', 'aurelia-fetch-client'], function (require, exports, aurelia_framework_1, aurelia_fetch_client_1) {
     "use strict";
-    var WpApi = (function () {
-        function WpApi(http) {
-            this.http = http;
-            http.configure(function (config) {
+    var resolveJson = function (response) { return response.json(); };
+    var takeOne = function (response) { return response[0]; };
+    var Api = (function () {
+        function Api(getHttpClient) {
+            this.getHttpClient = getHttpClient;
+            this.http = this.getHttpClient();
+            this.http.configure(function (config) {
                 config
                     .withBaseUrl(wpTheme.api_url);
             });
         }
-        WpApi.prototype.getHomepage = function () {
-            return this.getPages();
+        Api.prototype.single = function (postType, id) {
+            var pluralizedPostType = postType + 's';
+            return this.http.fetch(pluralizedPostType + "/" + id).then(resolveJson);
         };
-        WpApi.prototype.getPages = function () {
-            return this.http.fetch("pages");
+        Api.prototype.many = function (postType) {
+            var pluralizedPostType = postType + 's';
+            return this.http.fetch("" + pluralizedPostType).then(resolveJson);
         };
-        WpApi.prototype.getPage = function (id) {
-            return this.http.fetch("pages/" + id);
+        Api.prototype.getHomepage = function () {
+            return this.single('page', 2);
         };
-        WpApi.prototype.getPageBySlug = function (slug) {
-            return this.http.fetch("pages/?slug=" + slug);
-        };
-        WpApi.prototype.getPost = function (id) {
-            return this.http.fetch("posts/" + id);
-        };
-        WpApi.prototype.getPostBySlug = function (slug) {
-            return this.http.fetch("post_by_slug/" + slug);
-        };
-        WpApi.prototype.getComments = function (id) {
-            return this.http.fetch(id + "/comments");
-        };
-        WpApi = __decorate([
-            aurelia_framework_1.inject(aurelia_fetch_client_1.HttpClient), 
-            __metadata('design:paramtypes', [aurelia_fetch_client_1.HttpClient])
-        ], WpApi);
-        return WpApi;
+        Api = __decorate([
+            __param(0, aurelia_framework_1.lazy(aurelia_fetch_client_1.HttpClient)), 
+            __metadata('design:paramtypes', [Object])
+        ], Api);
+        return Api;
     }());
-    exports.WpApi = WpApi;
+    exports.Api = Api;
 });
 
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -88,26 +84,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('homepage',["require", "exports", 'aurelia-framework', './services/wp-api'], function (require, exports, aurelia_framework_1, wp_api_1) {
+define('homepage',["require", "exports", 'aurelia-framework', './services/api'], function (require, exports, aurelia_framework_1, api_1) {
     "use strict";
     var Homepage = (function () {
         function Homepage(api) {
             this.api = api;
-            this.page = {};
+            this.content = {};
         }
         Homepage.prototype.activate = function () {
             var _this = this;
-            return this.api.getHomepage().then(function (response) { return response.json(); }).then(function (response) {
-                _this.page = response;
+            this.api.many('post').then(function (posts) { return console.log(posts); });
+            return this.api.getHomepage().then(function (response) {
+                _this.content = response;
             });
         };
         Homepage = __decorate([
-            aurelia_framework_1.inject(wp_api_1.WpApi), 
-            __metadata('design:paramtypes', [wp_api_1.WpApi])
+            aurelia_framework_1.inject(api_1.Api), 
+            __metadata('design:paramtypes', [api_1.Api])
         ], Homepage);
         return Homepage;
     }());
     exports.Homepage = Homepage;
+});
+
+define('interfaces',["require", "exports"], function (require, exports) {
+    "use strict";
 });
 
 define('main',["require", "exports", './environment'], function (require, exports, environment_1) {
@@ -141,24 +142,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('page',["require", "exports", 'aurelia-framework', './services/wp-api'], function (require, exports, aurelia_framework_1, wp_api_1) {
+define('page',["require", "exports", 'aurelia-framework', './services/api'], function (require, exports, aurelia_framework_1, api_1) {
     "use strict";
     var Page = (function () {
         function Page(api) {
-            this.page = {};
+            this.content = {};
             this.api = api;
         }
         Page.prototype.activate = function (params, routeConfig) {
             var _this = this;
-            this.api.getPage(params.id)
-                .then(function (response) { return response.json(); })
-                .then(function (data) {
-                _this.page = data.page;
-                routeConfig.navModel.setTitle(data.page.title);
+            this.api.single('page', params.id)
+                .then(function (page) {
+                _this.content = page;
+                routeConfig.navModel.setTitle(page.title.rendered);
             });
         };
         Page = __decorate([
-            aurelia_framework_1.inject(wp_api_1.WpApi), 
+            aurelia_framework_1.inject(api_1.Api), 
             __metadata('design:paramtypes', [Object])
         ], Page);
         return Page;
@@ -175,26 +175,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-define('post',["require", "exports", 'aurelia-framework', './services/wp-api'], function (require, exports, aurelia_framework_1, wp_api_1) {
+define('post',["require", "exports", 'aurelia-framework', './services/api'], function (require, exports, aurelia_framework_1, api_1) {
     "use strict";
     var Post = (function () {
         function Post(api) {
-            this.post = {};
+            this.content = {};
             this.comments = [];
             this.api = api;
         }
         Post.prototype.activate = function (params, routeConfig) {
             var _this = this;
-            this.api.getPost(params.id)
-                .then(function (response) { return response.json(); })
+            this.api.single('post', params.id)
                 .then(function (post) {
-                _this.post = post;
-                _this.comments = post.comments;
-                routeConfig.navModel.setTitle(post.title);
+                _this.content = post;
+                routeConfig.navModel.setTitle(post.title.rendered);
             });
         };
         Post = __decorate([
-            aurelia_framework_1.inject(wp_api_1.WpApi), 
+            aurelia_framework_1.inject(api_1.Api), 
             __metadata('design:paramtypes', [Object])
         ], Post);
         return Post;
@@ -209,8 +207,46 @@ define('resources/index',["require", "exports"], function (require, exports) {
     exports.configure = configure;
 });
 
+define('resources/value-converters/nice-date',["require", "exports"], function (require, exports) {
+    "use strict";
+    var NiceDateValueConverter = (function () {
+        function NiceDateValueConverter() {
+        }
+        NiceDateValueConverter.prototype.toView = function (value) {
+            var date = new Date(value);
+            if (isNaN(date.getMonth())) {
+                return value;
+            }
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+            var getMonthName = function (m) {
+                var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                return monthNames[m];
+            };
+            var getOrdinal = function (d) {
+                var ordinal = ['st', 'nd', 'rd', 'th'];
+                if (d === 1 || d === 21 || d === 31) {
+                    return ordinal[0];
+                }
+                if (d === 2 || d === 22) {
+                    return ordinal[1];
+                }
+                if (d === 3 || d === 23) {
+                    return ordinal[2];
+                }
+                return ordinal[3];
+            };
+            return "" + d + getOrdinal(d) + " " + getMonthName(m) + " " + y;
+        };
+        return NiceDateValueConverter;
+    }());
+    exports.NiceDateValueConverter = NiceDateValueConverter;
+});
+
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\n    <div class=\"page-host\">\n        <router-view></router-view>\n    </div>\n</template>\n"; });
-define('text!homepage.html', ['module'], function(module) { module.exports = "<template>\n    <h1>${page.title.rendered & oneTime}</h1>\n    <div innerhtml.one-time=\"page.content.rendered\"></div>\n</template>\n"; });
-define('text!page.html', ['module'], function(module) { module.exports = "<template></template>"; });
-define('text!post.html', ['module'], function(module) { module.exports = "<template></template>"; });
+define('text!homepage.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./partials/content.html\"></require>\n\n    <content content.bind=\"content\"></content>\n</template>\n"; });
+define('text!page.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./partials/content.html\"></require>\n\n    <content content.bind=\"content\"></content>\n</template>\n\n"; });
+define('text!post.html', ['module'], function(module) { module.exports = "<template>\n    <require from=\"./partials/content.html\"></require>\n\n    <content content.bind=\"content\"></content>\n</template>\n"; });
+define('text!partials/content.html', ['module'], function(module) { module.exports = "<template bindable=\"content,showLink\" id=\"${content.id}\">\n    \n    <require from=\"../resources/value-converters/nice-date\"></require>\n\n    <header class=\"entry-header\" with.bind=\"content\">\n        <div class=\"entry-meta\">${date | niceDate}</div>\n        <h1 class=\"entry-title\">\n            <template if.bind=\"!showLink\">${title.rendered}</template>\n            <template if.bind=\"showLink\"><a href=\"${link}\">${title.rendered}</a></template>\n        </h1>\n    </header>\n    <div class=\"entry-content\" with.bind=\"content\" innerhtml.bind=\"content.rendered\"></div>\n</template>\n"; });
 //# sourceMappingURL=app-bundle.js.map

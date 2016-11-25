@@ -1,25 +1,20 @@
 import {inject} from 'aurelia-framework';
-import {WpApi} from './services/wp-api';
+import {Api} from './services/api';
 
-@inject(WpApi)
+@inject(Api)
 export class Post {
-	private api: WpApi;
 	
-    post = {};
-	comments = [];
+    content = {};
 
-	constructor(api){
-		this.api = api;
+	constructor(private api: Api) {
 	}
 
 	activate(params, routeConfig) {
-		this.api.getPost(params.id)
-            .then(response => response.json())
+		this.api.single('post', params.id)
 			.then(post => {
-				this.post = post;
-				this.comments = post.comments;
+				this.content = post;
 
-				routeConfig.navModel.setTitle(post.title);
+				routeConfig.navModel.setTitle(post.title.rendered);
 			});
 	}
 }
