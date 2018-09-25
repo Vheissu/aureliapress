@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="http://gmpg.org/xfn/11">
 
-    <link href="<?php echo get_template_directory_uri(); ?>/app/styles/styles.css" rel="stylesheet" type="text/css" />
-    <script async src="<?php echo get_template_directory_uri(); ?>/app/scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
+    <link href="<?php echo get_template_directory_uri(); ?>/app/dist/app.css" rel="stylesheet" type="text/css" />
 
     <script>
         var wpTheme = {
