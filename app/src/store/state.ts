@@ -1,23 +1,27 @@
 import { WPPostObject } from 'interfaces';
 
+export interface CategoryState {
+    data: any[];
+    loaded: boolean;
+}
+
+export interface PageState {
+    data: WPPostObject[];
+    loaded: boolean;
+    page?: WPPostObject;
+}
+
+export interface PostState {
+    data: WPPostObject[];
+    loaded: boolean;
+    post?: WPPostObject;
+    recent: WPPostObject[];
+}
+
 export interface State {
-    categories: {
-        data: any[];
-        loaded: boolean;
-    };
-
-    pages: {
-        data: WPPostObject[];
-        loaded: boolean;
-        page?: WPPostObject;
-    };
-
-    posts: {
-        data: WPPostObject[];
-        loaded: boolean;
-        post?: WPPostObject;
-        recent: WPPostObject[];
-    }
+    categories: CategoryState;
+    pages: PageState;
+    posts: PostState;
 }
 
 export function getInitialState() {

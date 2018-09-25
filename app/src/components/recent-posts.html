@@ -1,0 +1,12 @@
+<template>
+    <div class="recent-posts">
+        <h3>${title}</h3>
+
+        <ul if.bind="posts.loaded">
+            <li repeat.for="post of posts.recent">
+                <a href.bind="post.link">${post.title}</a>
+            </li>
+        </ul>
+        <div else><strong>Loading...</strong></div>
+    </div>
+</template>

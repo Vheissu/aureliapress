@@ -55,6 +55,10 @@ export async function getAllPosts(state: State, limit: number = 100): Promise<St
 export async function getRecentPosts(state: State, limit: number = 5): Promise<State> {
     const newState = {...state};
 
+    if (!state.posts.loaded) {
+        getAllPosts(newState);
+    }
+
     newState.posts.recent = state.posts.data.slice(0, limit);
     newState.posts.loaded = true;
 
