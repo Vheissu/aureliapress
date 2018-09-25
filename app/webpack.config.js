@@ -44,8 +44,8 @@ module.exports = ({production, server, extractCss, coverage, analyze, karma} = {
   output: {
     path: outDir,
     publicPath: baseUrl,
-    filename: production ? '[name].[chunkhash].bundle.js' : '[name].[hash].bundle.js',
-    sourceMapFilename: production ? '[name].[chunkhash].bundle.map' : '[name].[hash].bundle.map',
+    filename: '[name].bundle.js',
+    sourceMapFilename: '[name].bundle.map',
     chunkFilename: production ? '[name].[chunkhash].chunk.js' : '[name].[hash].chunk.js'
   },
   performance: { hints: false },
@@ -121,7 +121,7 @@ module.exports = ({production, server, extractCss, coverage, analyze, karma} = {
       }
     }),
     ...when(extractCss, new MiniCssExtractPlugin({
-      filename: production ? '[contenthash].css' : '[id].css',
+      filename: '[name].css',
       allChunks: true
     })),
     ...when(production || server, new CopyWebpackPlugin([
