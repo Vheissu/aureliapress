@@ -5,10 +5,19 @@ import environment from './environment';
 import { PLATFORM } from 'aurelia-pal';
 import * as Bluebird from 'bluebird';
 
+import './assets/styles/global.css';
+
 import { initialState } from 'store/state';
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });
+
+if (typeof PLATFORM.global.wpTheme === 'undefined') {
+    console.log(PLATFORM.global);
+    PLATFORM.global.wpTheme = {
+        api_url: 'https://ilikekillnerds.com/wp-json/wp/v2/'
+    };
+}
 
 export async function configure(aurelia: Aurelia) {
     aurelia.use
