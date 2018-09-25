@@ -3,13 +3,13 @@ import {Api} from './services/api';
 
 @inject(Api)
 export class Homepage {
-	content = {};
+	posts = [];
 
 	constructor(private api: Api) {
 	
 	}
 
-    activate() {
-        return this.api.getHomepage().then(response => this.content = response);
+    activate(params, routeConfig) {
+        this.api.many('post').then(posts => this.posts = posts);
     }
 }

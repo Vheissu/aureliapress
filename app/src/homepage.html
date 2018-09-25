@@ -1,5 +1,5 @@
 <template>
     <require from="./partials/content.html"></require>
 
-    <content content.bind="content"></content>
+    <content repeat.for="post of posts" content.bind="post"></content>
 </template>
