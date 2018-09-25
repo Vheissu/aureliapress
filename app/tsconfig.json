@@ -1,27 +1,23 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "sourceMap": true,
     "target": "es5",
-    "module": "amd",
-    "declaration": false,
-    "noImplicitAny": false,
-    "removeComments": true,
+    "module": "esnext",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
-    "types": [
-        "whatwg-fetch"
+    "sourceRoot": "src",
+    "sourceMap": true,
+    "allowJs": true,
+    "baseUrl": "src",
+    "skipLibCheck": true,
+    "lib": [
+      "es2017", "dom"
     ]
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "filesGlob": [
+  "include": [
     "./src/**/*.ts",
     "./test/**/*.ts",
-    "./typings/index.d.ts",
     "./custom_typings/**/*.d.ts"
   ],
   "atom": {
