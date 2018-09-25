@@ -4,12 +4,12 @@ import {Api} from './services/api';
 @inject(Api)
 export class Pages {
     
-    items = {};
+    pages = {};
 
     constructor(private api: Api) {
     }
 
     activate(params, routeConfig) {
-        this.api.many('page').then(pages => this.content = pages);
+        this.api.many('page').then(pages => this.pages = pages);
     }
 }
