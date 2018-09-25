@@ -25,10 +25,14 @@ export class Api {
         return this.http.fetch(`${pluralizedPostType}/${id}`).then(resolveJson);
     }
 
-    many(postType: PostType): Promise<WPPostObject[]> {
+    many(postType: PostType, limit: number = 5): Promise<WPPostObject[]> {
         let pluralizedPostType = postType + 's';
 
-        return this.http.fetch(`${pluralizedPostType}`).then(resolveJson);
+        return this.http.fetch(`${pluralizedPostType}?per_page=${limit}`).then(resolveJson);
+    }
+
+    categories(): Promise<any[]> {
+        return this.http.fetch(`categories?sort=name&hide_empty=true&per_page=50`).then(resolveJson);
     }
 
     getHomepage(): Promise<WPPostObject> {
