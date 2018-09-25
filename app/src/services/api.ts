@@ -1,5 +1,5 @@
 import {lazy} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
+import {HttpClient, json} from 'aurelia-fetch-client';
 import {PostType, WPPostObject} from '../interfaces';
 
 declare var wpTheme: any;
